@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+
+# ESLint cache
+.eslintcache
+
+# Dependency directories
+**/coverage/
+**/node_modules/
+
+# Environment variables
+.env
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swn
+
+# Log files
+*.log
+
+# Package lock files
+package-lock.json
+yarn.lock
+
+# Dependency directories
+/jspm_packages/
+/bower_components/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
