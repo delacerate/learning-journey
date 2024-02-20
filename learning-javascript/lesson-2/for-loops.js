@@ -1,6 +1,9 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for
 // inside the for is 
 // initialization values | condition | final expression
+// summary of for loop:
+// Use a while loop when you want to execute a block of code repeatedly as long as a condition is true and you may not know in advance how many iterations are needed.
+// Use a for loop when you want to execute a block of code for a known number of iterations and you can specify the initialization, condition, and iteration in a single line.
 for (let i = 0; i < 5; i++) {
   console.log('in loop:', i)
 }
