@@ -10,10 +10,8 @@ const names = ['darman', 'luigi', 'bowser']
 //   console.log('in loop:', i)
 //   i +;
 // }
-let i = 0;
+let i = 0
 while (i < names.length) {
   console.log(names[i])
   i++
 }
-
-
