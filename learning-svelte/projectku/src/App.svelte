@@ -1,21 +1,19 @@
 <script>
-	let firstName = "darman";
-	let lastName = "hendrik";
-	let beltColour = "item manis";
-	$: fullName = `${firstName} ${lastName}`;
-	$: {
-		console.log(beltColour);
-		console.log(fullName);
-	}
+	let people = [
+		// { name: "yoshi", beltColour: "black", age: 25, id: 1 },
+		// { name: "akbar", beltColour: "yellow", age: 21, id: 2 },
+		// { name: "rossi", beltColour: "white", age: 22, id: 3 },
+	];
 </script>
 
 <main>
-	<p style="color: {beltColour}">
-		{fullName} - {beltColour} kamu sedang ada di belt ini
-	</p>
-	<input type="text" bind:value={firstName} />
-	<input type="text" bind:value={lastName} />
-	<input type="text" bind:value={beltColour} />
+	{#each people as person (person.id)}
+		<div>
+			<h4>{person.name}</h4>
+			<p>{person.age} years old, the belt is {person.beltColour}</p>
+		</div>
+	{:else}<p>there are no people to show</p>
+	{/each}
 </main>
 
 <style>
@@ -26,17 +24,9 @@
 		margin: 0 auto;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
 		}
 	}
 </style>
-
