@@ -495,11 +495,98 @@ var app = (function () {
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[3] = list[i];
+    	child_ctx[4] = list[i];
     	return child_ctx;
     }
 
-    // (21:1) {:else}
+    // (20:0) {:else}
+    function create_else_block_1(ctx) {
+    	let p;
+
+    	const block = {
+    		c: function create() {
+    			p = element("p");
+    			p.textContent = "not greater than 5";
+    			add_location(p, file, 20, 1, 453);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, p, anchor);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(p);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block_1.name,
+    		type: "else",
+    		source: "(20:0) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (18:18) 
+    function create_if_block_2(ctx) {
+    	let p;
+
+    	const block = {
+    		c: function create() {
+    			p = element("p");
+    			p.textContent = "Greater than 5";
+    			add_location(p, file, 18, 1, 422);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, p, anchor);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(p);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_2.name,
+    		type: "if",
+    		source: "(18:18) ",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (16:0) {#if num > 20}
+    function create_if_block_1(ctx) {
+    	let p;
+
+    	const block = {
+    		c: function create() {
+    			p = element("p");
+    			p.textContent = "greater than 20";
+    			add_location(p, file, 16, 1, 379);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, p, anchor);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(p);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_1.name,
+    		type: "if",
+    		source: "(16:0) {#if num > 20}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (34:1) {:else}
     function create_else_block(ctx) {
     	let p;
 
@@ -507,7 +594,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "there are no people to show";
-    			add_location(p, file, 20, 8, 577);
+    			add_location(p, file, 33, 8, 804);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -522,34 +609,69 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(21:1) {:else}",
+    		source: "(34:1) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (15:1) {#each people as person (person.id)}
+    // (28:3) {#if person.beltColour === "black"}
+    function create_if_block(ctx) {
+    	let p;
+    	let strong;
+
+    	const block = {
+    		c: function create() {
+    			p = element("p");
+    			strong = element("strong");
+    			strong.textContent = "Master Ninja";
+    			add_location(strong, file, 28, 7, 611);
+    			add_location(p, file, 28, 4, 608);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, p, anchor);
+    			append_dev(p, strong);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(p);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block.name,
+    		type: "if",
+    		source: "(28:3) {#if person.beltColour === \\\"black\\\"}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (25:1) {#each people as person (person.id)}
     function create_each_block(key_1, ctx) {
     	let div;
     	let h4;
-    	let t0_value = /*person*/ ctx[3].name + "";
+    	let t0_value = /*person*/ ctx[4].name + "";
     	let t0;
     	let t1;
-    	let p;
-    	let t2_value = /*person*/ ctx[3].age + "";
     	let t2;
+    	let p;
+    	let t3_value = /*person*/ ctx[4].age + "";
     	let t3;
-    	let t4_value = /*person*/ ctx[3].beltColour + "";
     	let t4;
+    	let t5_value = /*person*/ ctx[4].beltColour + "";
     	let t5;
+    	let t6;
     	let button;
-    	let t7;
+    	let t8;
     	let mounted;
     	let dispose;
+    	let if_block = /*person*/ ctx[4].beltColour === "black" && create_if_block(ctx);
 
     	function click_handler() {
-    		return /*click_handler*/ ctx[2](/*person*/ ctx[3]);
+    		return /*click_handler*/ ctx[3](/*person*/ ctx[4]);
     	}
 
     	const block = {
@@ -560,18 +682,20 @@ var app = (function () {
     			h4 = element("h4");
     			t0 = text(t0_value);
     			t1 = space();
+    			if (if_block) if_block.c();
+    			t2 = space();
     			p = element("p");
-    			t2 = text(t2_value);
-    			t3 = text(" years old, the belt is ");
-    			t4 = text(t4_value);
-    			t5 = space();
+    			t3 = text(t3_value);
+    			t4 = text(" years old, the belt is ");
+    			t5 = text(t5_value);
+    			t6 = space();
     			button = element("button");
     			button.textContent = "delete";
-    			t7 = space();
-    			add_location(h4, file, 16, 3, 404);
-    			add_location(p, file, 17, 3, 430);
-    			add_location(button, file, 18, 3, 496);
-    			add_location(div, file, 15, 2, 395);
+    			t8 = space();
+    			add_location(h4, file, 26, 3, 542);
+    			add_location(p, file, 30, 3, 657);
+    			add_location(button, file, 31, 3, 723);
+    			add_location(div, file, 25, 2, 533);
     			this.first = div;
     		},
     		m: function mount(target, anchor) {
@@ -579,13 +703,15 @@ var app = (function () {
     			append_dev(div, h4);
     			append_dev(h4, t0);
     			append_dev(div, t1);
+    			if (if_block) if_block.m(div, null);
+    			append_dev(div, t2);
     			append_dev(div, p);
-    			append_dev(p, t2);
     			append_dev(p, t3);
     			append_dev(p, t4);
-    			append_dev(div, t5);
+    			append_dev(p, t5);
+    			append_dev(div, t6);
     			append_dev(div, button);
-    			append_dev(div, t7);
+    			append_dev(div, t8);
 
     			if (!mounted) {
     				dispose = listen_dev(button, "click", click_handler, false, false, false, false);
@@ -594,12 +720,25 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if (dirty & /*people*/ 1 && t0_value !== (t0_value = /*person*/ ctx[3].name + "")) set_data_dev(t0, t0_value);
-    			if (dirty & /*people*/ 1 && t2_value !== (t2_value = /*person*/ ctx[3].age + "")) set_data_dev(t2, t2_value);
-    			if (dirty & /*people*/ 1 && t4_value !== (t4_value = /*person*/ ctx[3].beltColour + "")) set_data_dev(t4, t4_value);
+    			if (dirty & /*people*/ 1 && t0_value !== (t0_value = /*person*/ ctx[4].name + "")) set_data_dev(t0, t0_value);
+
+    			if (/*person*/ ctx[4].beltColour === "black") {
+    				if (if_block) ; else {
+    					if_block = create_if_block(ctx);
+    					if_block.c();
+    					if_block.m(div, t2);
+    				}
+    			} else if (if_block) {
+    				if_block.d(1);
+    				if_block = null;
+    			}
+
+    			if (dirty & /*people*/ 1 && t3_value !== (t3_value = /*person*/ ctx[4].age + "")) set_data_dev(t3, t3_value);
+    			if (dirty & /*people*/ 1 && t5_value !== (t5_value = /*person*/ ctx[4].beltColour + "")) set_data_dev(t5, t5_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div);
+    			if (if_block) if_block.d();
     			mounted = false;
     			dispose();
     		}
@@ -609,7 +748,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(15:1) {#each people as person (person.id)}",
+    		source: "(25:1) {#each people as person (person.id)}",
     		ctx
     	});
 
@@ -617,12 +756,22 @@ var app = (function () {
     }
 
     function create_fragment(ctx) {
+    	let t;
     	let main;
     	let each_blocks = [];
     	let each_1_lookup = new Map();
+
+    	function select_block_type(ctx, dirty) {
+    		if (/*num*/ ctx[2] > 20) return create_if_block_1;
+    		if (/*num*/ ctx[2] > 5) return create_if_block_2;
+    		return create_else_block_1;
+    	}
+
+    	let current_block_type = select_block_type(ctx);
+    	let if_block = current_block_type(ctx);
     	let each_value = /*people*/ ctx[0];
     	validate_each_argument(each_value);
-    	const get_key = ctx => /*person*/ ctx[3].id;
+    	const get_key = ctx => /*person*/ ctx[4].id;
     	validate_each_keys(ctx, each_value, get_each_context, get_key);
 
     	for (let i = 0; i < each_value.length; i += 1) {
@@ -639,6 +788,8 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
+    			if_block.c();
+    			t = space();
     			main = element("main");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
@@ -650,12 +801,14 @@ var app = (function () {
     			}
 
     			attr_dev(main, "class", "svelte-1h6otfa");
-    			add_location(main, file, 13, 0, 348);
+    			add_location(main, file, 23, 0, 486);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
+    			if_block.m(target, anchor);
+    			insert_dev(target, t, anchor);
     			insert_dev(target, main, anchor);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
@@ -690,6 +843,8 @@ var app = (function () {
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
+    			if_block.d(detaching);
+    			if (detaching) detach_dev(t);
     			if (detaching) detach_dev(main);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
@@ -741,6 +896,7 @@ var app = (function () {
     		$$invalidate(0, people = people.filter(person => person.id != id));
     	}; // console.log(e);
 
+    	let num = 5;
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
@@ -748,17 +904,18 @@ var app = (function () {
     	});
 
     	const click_handler = person => handleClick(person.id);
-    	$$self.$capture_state = () => ({ people, handleClick });
+    	$$self.$capture_state = () => ({ people, handleClick, num });
 
     	$$self.$inject_state = $$props => {
     		if ('people' in $$props) $$invalidate(0, people = $$props.people);
+    		if ('num' in $$props) $$invalidate(2, num = $$props.num);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [people, handleClick, click_handler];
+    	return [people, handleClick, num, click_handler];
     }
 
     class App extends SvelteComponentDev {
