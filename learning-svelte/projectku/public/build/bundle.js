@@ -47,9 +47,6 @@ var app = (function () {
     function space() {
         return text(' ');
     }
-    function empty() {
-        return text('');
-    }
     function listen(node, event, handler, options) {
         node.addEventListener(event, handler, options);
         return () => node.removeEventListener(event, handler, options);
@@ -62,6 +59,9 @@ var app = (function () {
     }
     function children(element) {
         return Array.from(element.childNodes);
+    }
+    function toggle_class(element, name, toggle) {
+        element.classList[toggle ? 'add' : 'remove'](name);
     }
     function custom_event(type, detail, { bubbles = false, cancelable = false } = {}) {
         const e = document.createEvent('CustomEvent');
@@ -519,7 +519,7 @@ var app = (function () {
 
     const file$1 = "src/Modal.svelte";
 
-    // (5:0) {#if showModal}
+    // (6:0) {#if showModal}
     function create_if_block$1(ctx) {
     	let div1;
     	let div0;
@@ -531,17 +531,19 @@ var app = (function () {
     			div0 = element("div");
     			p = element("p");
     			p.textContent = "sign up for offers";
-    			add_location(p, file$1, 7, 3, 108);
-    			attr_dev(div0, "class", "modal");
-    			add_location(div0, file$1, 6, 2, 85);
-    			attr_dev(div1, "class", "backdrop");
-    			add_location(div1, file$1, 5, 1, 60);
+    			add_location(p, file$1, 8, 3, 152);
+    			attr_dev(div0, "class", "modal svelte-1ofeg0j");
+    			add_location(div0, file$1, 7, 2, 129);
+    			attr_dev(div1, "class", "backdrop svelte-1ofeg0j");
+    			toggle_class(div1, "promo", /*isPromo*/ ctx[1]);
+    			add_location(div1, file$1, 6, 1, 82);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
     			append_dev(div1, div0);
     			append_dev(div0, p);
     		},
+    		p: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
     		}
@@ -551,7 +553,7 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(5:0) {#if showModal}",
+    		source: "(6:0) {#if showModal}",
     		ctx
     	});
 
@@ -559,27 +561,34 @@ var app = (function () {
     }
 
     function create_fragment$1(ctx) {
-    	let if_block_anchor;
+    	let t;
+    	let main;
     	let if_block = /*showModal*/ ctx[0] && create_if_block$1(ctx);
 
     	const block = {
     		c: function create() {
     			if (if_block) if_block.c();
-    			if_block_anchor = empty();
+    			t = space();
+    			main = element("main");
+    			add_location(main, file$1, 12, 0, 201);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
     			if (if_block) if_block.m(target, anchor);
-    			insert_dev(target, if_block_anchor, anchor);
+    			insert_dev(target, t, anchor);
+    			insert_dev(target, main, anchor);
     		},
-    		p: noop,
+    		p: function update(ctx, [dirty]) {
+    			if (/*showModal*/ ctx[0]) if_block.p(ctx, dirty);
+    		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (if_block) if_block.d(detaching);
-    			if (detaching) detach_dev(if_block_anchor);
+    			if (detaching) detach_dev(t);
+    			if (detaching) detach_dev(main);
     		}
     	};
 
@@ -598,23 +607,25 @@ var app = (function () {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Modal', slots, []);
     	let showModal = true;
+    	let isPromo = false;
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<Modal> was created with unknown prop '${key}'`);
     	});
 
-    	$$self.$capture_state = () => ({ showModal });
+    	$$self.$capture_state = () => ({ showModal, isPromo });
 
     	$$self.$inject_state = $$props => {
     		if ('showModal' in $$props) $$invalidate(0, showModal = $$props.showModal);
+    		if ('isPromo' in $$props) $$invalidate(1, isPromo = $$props.isPromo);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [showModal];
+    	return [showModal, isPromo];
     }
 
     class Modal extends SvelteComponentDev {
