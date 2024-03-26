@@ -519,31 +519,39 @@ var app = (function () {
 
     const file$1 = "src/Modal.svelte";
 
-    // (6:0) {#if showModal}
+    // (7:0) {#if showModal}
     function create_if_block$1(ctx) {
     	let div1;
     	let div0;
     	let p;
+    	let t;
 
     	const block = {
     		c: function create() {
     			div1 = element("div");
     			div0 = element("div");
     			p = element("p");
-    			p.textContent = "sign up for offers";
-    			add_location(p, file$1, 8, 3, 152);
-    			attr_dev(div0, "class", "modal svelte-1ofeg0j");
-    			add_location(div0, file$1, 7, 2, 129);
-    			attr_dev(div1, "class", "backdrop svelte-1ofeg0j");
-    			toggle_class(div1, "promo", /*isPromo*/ ctx[1]);
-    			add_location(div1, file$1, 6, 1, 82);
+    			t = text(/*message*/ ctx[0]);
+    			add_location(p, file$1, 9, 3, 204);
+    			attr_dev(div0, "class", "modal svelte-4yxnxj");
+    			add_location(div0, file$1, 8, 2, 181);
+    			attr_dev(div1, "class", "backdrop svelte-4yxnxj");
+    			toggle_class(div1, "promo", /*isPromo*/ ctx[2]);
+    			add_location(div1, file$1, 7, 1, 134);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
     			append_dev(div1, div0);
     			append_dev(div0, p);
+    			append_dev(p, t);
     		},
-    		p: noop,
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*message*/ 1) set_data_dev(t, /*message*/ ctx[0]);
+
+    			if (dirty & /*isPromo*/ 4) {
+    				toggle_class(div1, "promo", /*isPromo*/ ctx[2]);
+    			}
+    		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
     		}
@@ -553,7 +561,7 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(6:0) {#if showModal}",
+    		source: "(7:0) {#if showModal}",
     		ctx
     	});
 
@@ -563,14 +571,14 @@ var app = (function () {
     function create_fragment$1(ctx) {
     	let t;
     	let main;
-    	let if_block = /*showModal*/ ctx[0] && create_if_block$1(ctx);
+    	let if_block = /*showModal*/ ctx[1] && create_if_block$1(ctx);
 
     	const block = {
     		c: function create() {
     			if (if_block) if_block.c();
     			t = space();
     			main = element("main");
-    			add_location(main, file$1, 12, 0, 201);
+    			add_location(main, file$1, 13, 0, 244);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -581,7 +589,18 @@ var app = (function () {
     			insert_dev(target, main, anchor);
     		},
     		p: function update(ctx, [dirty]) {
-    			if (/*showModal*/ ctx[0]) if_block.p(ctx, dirty);
+    			if (/*showModal*/ ctx[1]) {
+    				if (if_block) {
+    					if_block.p(ctx, dirty);
+    				} else {
+    					if_block = create_if_block$1(ctx);
+    					if_block.c();
+    					if_block.m(t.parentNode, t);
+    				}
+    			} else if (if_block) {
+    				if_block.d(1);
+    				if_block = null;
+    			}
     		},
     		i: noop,
     		o: noop,
@@ -606,32 +625,40 @@ var app = (function () {
     function instance$1($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Modal', slots, []);
-    	let showModal = true;
-    	let isPromo = false;
-    	const writable_props = [];
+    	let { message = "default value" } = $$props;
+    	let { showModal = true } = $$props;
+    	let { isPromo = true } = $$props;
+    	const writable_props = ['message', 'showModal', 'isPromo'];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<Modal> was created with unknown prop '${key}'`);
     	});
 
-    	$$self.$capture_state = () => ({ showModal, isPromo });
+    	$$self.$$set = $$props => {
+    		if ('message' in $$props) $$invalidate(0, message = $$props.message);
+    		if ('showModal' in $$props) $$invalidate(1, showModal = $$props.showModal);
+    		if ('isPromo' in $$props) $$invalidate(2, isPromo = $$props.isPromo);
+    	};
+
+    	$$self.$capture_state = () => ({ message, showModal, isPromo });
 
     	$$self.$inject_state = $$props => {
-    		if ('showModal' in $$props) $$invalidate(0, showModal = $$props.showModal);
-    		if ('isPromo' in $$props) $$invalidate(1, isPromo = $$props.isPromo);
+    		if ('message' in $$props) $$invalidate(0, message = $$props.message);
+    		if ('showModal' in $$props) $$invalidate(1, showModal = $$props.showModal);
+    		if ('isPromo' in $$props) $$invalidate(2, isPromo = $$props.isPromo);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [showModal, isPromo];
+    	return [message, showModal, isPromo];
     }
 
     class Modal extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, {});
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { message: 0, showModal: 1, isPromo: 2 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -639,6 +666,30 @@ var app = (function () {
     			options,
     			id: create_fragment$1.name
     		});
+    	}
+
+    	get message() {
+    		throw new Error("<Modal>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set message(value) {
+    		throw new Error("<Modal>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get showModal() {
+    		throw new Error("<Modal>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set showModal(value) {
+    		throw new Error("<Modal>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get isPromo() {
+    		throw new Error("<Modal>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set isPromo(value) {
+    		throw new Error("<Modal>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
@@ -659,7 +710,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "not greater than 5";
-    			add_location(p, file, 24, 1, 502);
+    			add_location(p, file, 24, 1, 567);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -688,7 +739,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Greater than 5";
-    			add_location(p, file, 22, 1, 471);
+    			add_location(p, file, 22, 1, 536);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -717,7 +768,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "greater than 20";
-    			add_location(p, file, 20, 1, 428);
+    			add_location(p, file, 20, 1, 493);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -746,7 +797,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "there are no people to show";
-    			add_location(p, file, 37, 8, 853);
+    			add_location(p, file, 37, 8, 918);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -778,8 +829,8 @@ var app = (function () {
     			p = element("p");
     			strong = element("strong");
     			strong.textContent = "Master Ninja";
-    			add_location(strong, file, 32, 7, 660);
-    			add_location(p, file, 32, 4, 657);
+    			add_location(strong, file, 32, 7, 725);
+    			add_location(p, file, 32, 4, 722);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -844,10 +895,10 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "delete";
     			t8 = space();
-    			add_location(h4, file, 30, 3, 591);
-    			add_location(p, file, 34, 3, 706);
-    			add_location(button, file, 35, 3, 772);
-    			add_location(div, file, 29, 2, 582);
+    			add_location(h4, file, 30, 3, 656);
+    			add_location(p, file, 34, 3, 771);
+    			add_location(button, file, 35, 3, 837);
+    			add_location(div, file, 29, 2, 647);
     			this.first = div;
     		},
     		m: function mount(target, anchor) {
@@ -915,7 +966,15 @@ var app = (function () {
     	let each_blocks = [];
     	let each_1_lookup = new Map();
     	let current;
-    	modal = new Modal({ $$inline: true });
+
+    	modal = new Modal({
+    			props: {
+    				message: "hey, im a prop value",
+    				isPromo: false,
+    				showModal: false
+    			},
+    			$$inline: true
+    		});
 
     	function select_block_type(ctx, dirty) {
     		if (/*num*/ ctx[2] > 20) return create_if_block_1;
@@ -959,7 +1018,7 @@ var app = (function () {
     			}
 
     			attr_dev(main, "class", "svelte-1h6otfa");
-    			add_location(main, file, 27, 0, 535);
+    			add_location(main, file, 27, 0, 600);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
