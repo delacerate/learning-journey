@@ -73,6 +73,16 @@ var app = (function () {
     function set_current_component(component) {
         current_component = component;
     }
+    // TODO figure out if we still want to support
+    // shorthand events, or if we want to implement
+    // a real bubbling mechanism
+    function bubble(component, event) {
+        const callbacks = component.$$.callbacks[event.type];
+        if (callbacks) {
+            // @ts-ignore
+            callbacks.slice().forEach(fn => fn.call(this, event));
+        }
+    }
 
     const dirty_components = [];
     const binding_callbacks = [];
@@ -525,6 +535,8 @@ var app = (function () {
     	let div0;
     	let p;
     	let t;
+    	let mounted;
+    	let dispose;
 
     	const block = {
     		c: function create() {
@@ -532,9 +544,9 @@ var app = (function () {
     			div0 = element("div");
     			p = element("p");
     			t = text(/*message*/ ctx[0]);
-    			add_location(p, file$1, 9, 3, 204);
+    			add_location(p, file$1, 9, 3, 213);
     			attr_dev(div0, "class", "modal svelte-4yxnxj");
-    			add_location(div0, file$1, 8, 2, 181);
+    			add_location(div0, file$1, 8, 2, 190);
     			attr_dev(div1, "class", "backdrop svelte-4yxnxj");
     			toggle_class(div1, "promo", /*isPromo*/ ctx[2]);
     			add_location(div1, file$1, 7, 1, 134);
@@ -544,6 +556,11 @@ var app = (function () {
     			append_dev(div1, div0);
     			append_dev(div0, p);
     			append_dev(p, t);
+
+    			if (!mounted) {
+    				dispose = listen_dev(div1, "click", /*click_handler*/ ctx[3], false, false, false, false);
+    				mounted = true;
+    			}
     		},
     		p: function update(ctx, dirty) {
     			if (dirty & /*message*/ 1) set_data_dev(t, /*message*/ ctx[0]);
@@ -554,6 +571,8 @@ var app = (function () {
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
+    			mounted = false;
+    			dispose();
     		}
     	};
 
@@ -578,7 +597,7 @@ var app = (function () {
     			if (if_block) if_block.c();
     			t = space();
     			main = element("main");
-    			add_location(main, file$1, 13, 0, 244);
+    			add_location(main, file$1, 13, 0, 253);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -634,6 +653,10 @@ var app = (function () {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<Modal> was created with unknown prop '${key}'`);
     	});
 
+    	function click_handler(event) {
+    		bubble.call(this, $$self, event);
+    	}
+
     	$$self.$$set = $$props => {
     		if ('message' in $$props) $$invalidate(0, message = $$props.message);
     		if ('showModal' in $$props) $$invalidate(1, showModal = $$props.showModal);
@@ -652,7 +675,7 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [message, showModal, isPromo];
+    	return [message, showModal, isPromo, click_handler];
     }
 
     class Modal extends SvelteComponentDev {
@@ -698,11 +721,11 @@ var app = (function () {
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[4] = list[i];
+    	child_ctx[6] = list[i];
     	return child_ctx;
     }
 
-    // (24:0) {:else}
+    // (32:0) {:else}
     function create_else_block_1(ctx) {
     	let p;
 
@@ -710,7 +733,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "not greater than 5";
-    			add_location(p, file, 24, 1, 567);
+    			add_location(p, file, 32, 1, 670);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -724,14 +747,14 @@ var app = (function () {
     		block,
     		id: create_else_block_1.name,
     		type: "else",
-    		source: "(24:0) {:else}",
+    		source: "(32:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (22:18) 
+    // (30:18) 
     function create_if_block_2(ctx) {
     	let p;
 
@@ -739,7 +762,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "Greater than 5";
-    			add_location(p, file, 22, 1, 536);
+    			add_location(p, file, 30, 1, 639);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -753,14 +776,14 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(22:18) ",
+    		source: "(30:18) ",
     		ctx
     	});
 
     	return block;
     }
 
-    // (20:0) {#if num > 20}
+    // (28:0) {#if num > 20}
     function create_if_block_1(ctx) {
     	let p;
 
@@ -768,7 +791,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "greater than 20";
-    			add_location(p, file, 20, 1, 493);
+    			add_location(p, file, 28, 1, 596);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -782,14 +805,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(20:0) {#if num > 20}",
+    		source: "(28:0) {#if num > 20}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (38:1) {:else}
+    // (47:1) {:else}
     function create_else_block(ctx) {
     	let p;
 
@@ -797,7 +820,7 @@ var app = (function () {
     		c: function create() {
     			p = element("p");
     			p.textContent = "there are no people to show";
-    			add_location(p, file, 37, 8, 918);
+    			add_location(p, file, 46, 8, 1073);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -812,14 +835,14 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(38:1) {:else}",
+    		source: "(47:1) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (32:3) {#if person.beltColour === "black"}
+    // (41:3) {#if person.beltColour === "black"}
     function create_if_block(ctx) {
     	let p;
     	let strong;
@@ -829,8 +852,8 @@ var app = (function () {
     			p = element("p");
     			strong = element("strong");
     			strong.textContent = "Master Ninja";
-    			add_location(strong, file, 32, 7, 725);
-    			add_location(p, file, 32, 4, 722);
+    			add_location(strong, file, 41, 7, 880);
+    			add_location(p, file, 41, 4, 877);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, p, anchor);
@@ -845,36 +868,36 @@ var app = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(32:3) {#if person.beltColour === \\\"black\\\"}",
+    		source: "(41:3) {#if person.beltColour === \\\"black\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (29:1) {#each people as person (person.id)}
+    // (38:1) {#each people as person (person.id)}
     function create_each_block(key_1, ctx) {
     	let div;
     	let h4;
-    	let t0_value = /*person*/ ctx[4].name + "";
+    	let t0_value = /*person*/ ctx[6].name + "";
     	let t0;
     	let t1;
     	let t2;
     	let p;
-    	let t3_value = /*person*/ ctx[4].age + "";
+    	let t3_value = /*person*/ ctx[6].age + "";
     	let t3;
     	let t4;
-    	let t5_value = /*person*/ ctx[4].beltColour + "";
+    	let t5_value = /*person*/ ctx[6].beltColour + "";
     	let t5;
     	let t6;
     	let button;
     	let t8;
     	let mounted;
     	let dispose;
-    	let if_block = /*person*/ ctx[4].beltColour === "black" && create_if_block(ctx);
+    	let if_block = /*person*/ ctx[6].beltColour === "black" && create_if_block(ctx);
 
     	function click_handler() {
-    		return /*click_handler*/ ctx[3](/*person*/ ctx[4]);
+    		return /*click_handler*/ ctx[5](/*person*/ ctx[6]);
     	}
 
     	const block = {
@@ -895,10 +918,10 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "delete";
     			t8 = space();
-    			add_location(h4, file, 30, 3, 656);
-    			add_location(p, file, 34, 3, 771);
-    			add_location(button, file, 35, 3, 837);
-    			add_location(div, file, 29, 2, 647);
+    			add_location(h4, file, 39, 3, 811);
+    			add_location(p, file, 43, 3, 926);
+    			add_location(button, file, 44, 3, 992);
+    			add_location(div, file, 38, 2, 802);
     			this.first = div;
     		},
     		m: function mount(target, anchor) {
@@ -923,9 +946,9 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if (dirty & /*people*/ 1 && t0_value !== (t0_value = /*person*/ ctx[4].name + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*people*/ 2 && t0_value !== (t0_value = /*person*/ ctx[6].name + "")) set_data_dev(t0, t0_value);
 
-    			if (/*person*/ ctx[4].beltColour === "black") {
+    			if (/*person*/ ctx[6].beltColour === "black") {
     				if (if_block) ; else {
     					if_block = create_if_block(ctx);
     					if_block.c();
@@ -936,8 +959,8 @@ var app = (function () {
     				if_block = null;
     			}
 
-    			if (dirty & /*people*/ 1 && t3_value !== (t3_value = /*person*/ ctx[4].age + "")) set_data_dev(t3, t3_value);
-    			if (dirty & /*people*/ 1 && t5_value !== (t5_value = /*person*/ ctx[4].beltColour + "")) set_data_dev(t5, t5_value);
+    			if (dirty & /*people*/ 2 && t3_value !== (t3_value = /*person*/ ctx[6].age + "")) set_data_dev(t3, t3_value);
+    			if (dirty & /*people*/ 2 && t5_value !== (t5_value = /*person*/ ctx[6].beltColour + "")) set_data_dev(t5, t5_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div);
@@ -951,7 +974,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(29:1) {#each people as person (person.id)}",
+    		source: "(38:1) {#each people as person (person.id)}",
     		ctx
     	});
 
@@ -963,30 +986,36 @@ var app = (function () {
     	let t0;
     	let t1;
     	let main;
+    	let button;
+    	let t3;
     	let each_blocks = [];
     	let each_1_lookup = new Map();
     	let current;
+    	let mounted;
+    	let dispose;
 
     	modal = new Modal({
     			props: {
     				message: "hey, im a prop value",
     				isPromo: false,
-    				showModal: false
+    				showModal: /*showModal*/ ctx[0]
     			},
     			$$inline: true
     		});
 
+    	modal.$on("click", /*toggleModal*/ ctx[2]);
+
     	function select_block_type(ctx, dirty) {
-    		if (/*num*/ ctx[2] > 20) return create_if_block_1;
-    		if (/*num*/ ctx[2] > 5) return create_if_block_2;
+    		if (/*num*/ ctx[4] > 20) return create_if_block_1;
+    		if (/*num*/ ctx[4] > 5) return create_if_block_2;
     		return create_else_block_1;
     	}
 
     	let current_block_type = select_block_type(ctx);
     	let if_block = current_block_type(ctx);
-    	let each_value = /*people*/ ctx[0];
+    	let each_value = /*people*/ ctx[1];
     	validate_each_argument(each_value);
-    	const get_key = ctx => /*person*/ ctx[4].id;
+    	const get_key = ctx => /*person*/ ctx[6].id;
     	validate_each_keys(ctx, each_value, get_each_context, get_key);
 
     	for (let i = 0; i < each_value.length; i += 1) {
@@ -1008,6 +1037,9 @@ var app = (function () {
     			if_block.c();
     			t1 = space();
     			main = element("main");
+    			button = element("button");
+    			button.textContent = "Open Modal";
+    			t3 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
@@ -1017,8 +1049,9 @@ var app = (function () {
     				each_1_else.c();
     			}
 
+    			add_location(button, file, 36, 1, 711);
     			attr_dev(main, "class", "svelte-1h6otfa");
-    			add_location(main, file, 27, 0, 600);
+    			add_location(main, file, 35, 0, 703);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1029,6 +1062,8 @@ var app = (function () {
     			if_block.m(target, anchor);
     			insert_dev(target, t1, anchor);
     			insert_dev(target, main, anchor);
+    			append_dev(main, button);
+    			append_dev(main, t3);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				if (each_blocks[i]) {
@@ -1041,10 +1076,19 @@ var app = (function () {
     			}
 
     			current = true;
+
+    			if (!mounted) {
+    				dispose = listen_dev(button, "click", /*toggleModal*/ ctx[2], false, false, false, false);
+    				mounted = true;
+    			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*handleClick, people*/ 3) {
-    				each_value = /*people*/ ctx[0];
+    			const modal_changes = {};
+    			if (dirty & /*showModal*/ 1) modal_changes.showModal = /*showModal*/ ctx[0];
+    			modal.$set(modal_changes);
+
+    			if (dirty & /*handleClick, people*/ 10) {
+    				each_value = /*people*/ ctx[1];
     				validate_each_argument(each_value);
     				validate_each_keys(ctx, each_value, get_each_context, get_key);
     				each_blocks = update_keyed_each(each_blocks, dirty, get_key, 1, ctx, each_value, each_1_lookup, main, destroy_block, create_each_block, null, get_each_context);
@@ -1082,6 +1126,8 @@ var app = (function () {
     			}
 
     			if (each_1_else) each_1_else.d();
+    			mounted = false;
+    			dispose();
     		}
     	};
 
@@ -1099,6 +1145,11 @@ var app = (function () {
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
+    	let showModal = false;
+
+    	const toggleModal = () => {
+    		$$invalidate(0, showModal = !showModal);
+    	};
 
     	let people = [
     		{
@@ -1123,7 +1174,7 @@ var app = (function () {
 
     	const handleClick = id => {
     		// console.log(id);
-    		$$invalidate(0, people = people.filter(person => person.id != id));
+    		$$invalidate(1, people = people.filter(person => person.id != id));
     	}; // console.log(e);
 
     	let num = 5;
@@ -1134,18 +1185,27 @@ var app = (function () {
     	});
 
     	const click_handler = person => handleClick(person.id);
-    	$$self.$capture_state = () => ({ Modal, people, handleClick, num });
+
+    	$$self.$capture_state = () => ({
+    		Modal,
+    		showModal,
+    		toggleModal,
+    		people,
+    		handleClick,
+    		num
+    	});
 
     	$$self.$inject_state = $$props => {
-    		if ('people' in $$props) $$invalidate(0, people = $$props.people);
-    		if ('num' in $$props) $$invalidate(2, num = $$props.num);
+    		if ('showModal' in $$props) $$invalidate(0, showModal = $$props.showModal);
+    		if ('people' in $$props) $$invalidate(1, people = $$props.people);
+    		if ('num' in $$props) $$invalidate(4, num = $$props.num);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [people, handleClick, num, click_handler];
+    	return [showModal, people, toggleModal, handleClick, num, click_handler];
     }
 
     class App extends SvelteComponentDev {
